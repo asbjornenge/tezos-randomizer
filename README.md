@@ -9,7 +9,7 @@ It uses entropy from `timestamp` at calltime AND the [Harbinger Oracle](https://
 ## Contracts
 
 * Granadanet
-  * [KT1NAn3Le3o3eJKdf6G49PjQ2cNVMeUW871R](https://better-call.dev/granadanet/KT1NAn3Le3o3eJKdf6G49PjQ2cNVMeUW871R/)
+  * [KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk](https://better-call.dev/granadanet/KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk/)
 
 ## Setup environment
 
@@ -17,6 +17,13 @@ It uses entropy from `timestamp` at calltime AND the [Harbinger Oracle](https://
 ./scipts/init-env.sh
 source bin/activate
 spy test tests.py output --html
+```
+
+## Compile & Deploy
+
+```
+spy compile compile.py compiled
+spy originate-contract --code compiled/randomizer/step_000_cont_0_contract.tz --storage compiled/randomizer/step_000_cont_0_storage.json --rpc https://granadanet.smartpy.io
 ```
 
 ## TODO
