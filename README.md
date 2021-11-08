@@ -1,13 +1,15 @@
 # Tezos Randomizer
 
-Tezod Randomizer "Oracle". It's a smart contract that you can call to get a random number between X and Y (for now).
+Tezod Randomizer "Oracle".  
 
-It uses entropy from timestamp at calltime AND the [Harbinger Oracle](https://github.com/tacoinfra/harbinger).
+It's a smart contract that you can call to get a random number between X and Y (for now).
+
+It uses entropy from `timestamp` at calltime AND the [Harbinger Oracle](https://github.com/tacoinfra/harbinger).
 
 ## Contracts
 
 * Granadanet
-** KT1NAn3Le3o3eJKdf6G49PjQ2cNVMeUW871R
+  * KT1NAn3Le3o3eJKdf6G49PjQ2cNVMeUW871R
 
 ## Setup environment
 
