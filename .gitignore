@@ -1,0 +1,6 @@
+*.swp
+output
+compiled
+bin
+lib
+pyvenv.cfg
