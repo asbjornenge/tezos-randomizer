@@ -2,7 +2,7 @@ import smartpy as sp
 from datetime import datetime
 
 Randomizer = sp.io.import_script_from_url("file:randomizer.py")
-Harbinger = sp.io.import_script_from_url("file:///Users/asbjorn/srv/asbjornenge/harbinger-contracts/normalizer.py")
+Harbinger = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmUS8DoZCigKBko57uEGL1Cwq8gkH6jwAyZTbMg8pjHLQF/normalizer.py")
 
 @sp.add_target(name="Randomizer", kind="randomizer")
 def test():
