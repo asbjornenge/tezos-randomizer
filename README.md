@@ -34,6 +34,8 @@ spy originate-contract --code compiled/randomizer/step_000_cont_0_contract.tz --
 
 ## TODO
 
+* Get fresh entropy on Request
+* Hangzhou views :tada:
 * Add more entropy (other sources too)
 * Expose more entrypoints
 
