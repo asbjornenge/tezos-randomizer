@@ -11,6 +11,12 @@ It uses entropy from `timestamp` at calltime AND the [Harbinger Oracle](https://
 * Granadanet
   * [KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk](https://better-call.dev/granadanet/KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk/)
 
+## Import
+
+```
+Randomizer = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmeQ8QUmbQ1oV9FQb65UxgbM5323yuKNFgk3WgTzgzeY3E")
+```
+
 ## Setup environment
 
 ```
