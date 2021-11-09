@@ -39,5 +39,6 @@ spy originate-contract --code compiled/randomizer/step_000_cont_0_contract.tz --
 * Add more entropy (other sources too)
 * Look into rejection sampling
 * Expose more entrypoints
+* Endpoint to get multiple values (unique / non-unique optionally)
 
 enjoy. 
