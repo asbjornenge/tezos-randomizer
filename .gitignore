@@ -4,3 +4,4 @@ compiled
 bin
 lib
 pyvenv.cfg
+secrets

@@ -8,6 +8,8 @@ It uses entropy from `timestamp` at calltime AND the [Harbinger Oracle](https://
 
 ## Contracts
 
+* Mainnet
+  * [KT1PAckSnio3RD8g5HSJyCHTt18gWchtNJtR](https://better-call.dev/mainnet/KT1PAckSnio3RD8g5HSJyCHTt18gWchtNJtR/)
 * Granadanet
   * [KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk](https://better-call.dev/granadanet/KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk/)
 

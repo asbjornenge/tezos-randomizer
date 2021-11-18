@@ -1,8 +1,10 @@
 import smartpy as sp
 import json
+import os
+env = os.environ
 
 Randomizer = sp.io.import_script_from_url("file:randomizer.py")
-harbingerAddress = sp.address('KT1MwuujtBodVQFm1Jk1KTGNc49wygqoLvpe')
+harbingerAddress = sp.address(env['RANDOMIZER_HARBIGER_ADDRESS'])
 
 randomizerMetadata = {
   "name": "Randomizer",
