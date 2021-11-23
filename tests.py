@@ -2,6 +2,7 @@ import smartpy as sp
 from datetime import datetime
 
 Randomizer = sp.io.import_script_from_url("file:randomizer.py")
+Caller = sp.io.import_script_from_url("file:caller.py")
 Harbinger = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmQEiiK812GVE352znnFL372pyMxQUdX6C3mNojtfqmfqn")
 
 @sp.add_target(name="Randomizer", kind="randomizer")
@@ -39,7 +40,7 @@ def test():
   )
   scenario += randomizer
   scenario += randomizer.initHarbingerEntropy() 
-  randomCaller = Randomizer.RandomCaller(randomizer.address)
+  randomCaller = Caller.RandomCaller(randomizer.address)
   scenario += randomCaller 
 
   scenario += normalizer.update(
@@ -92,3 +93,11 @@ def test():
   scenario += randomCaller.getRandomNumber(sp.record(_from=1111, _to=2222)).run(now=sp.timestamp(int(datetime.now().timestamp())))
   scenario.verify(randomCaller.data.randomNumber >= 1111)
   scenario.verify(randomCaller.data.randomNumber <= 2222)
+
+  ## Sync endpoint
+
+  rnum = randomizer.randomBetweenSync(sp.record(_from=0,_to=100))
+  scenario.verify(rnum > 0)
+  scenario.verify(rnum < 100)
+
+  scenario += randomCaller.getRandomNumberSync(sp.record(_from=0,_to=100))

@@ -184,23 +184,13 @@ class Randomizer(sp.Contract):
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
-class RandomCaller(sp.Contract):
-  def __init__(self, randomizer):
-    self.init(
-      randomNumber=0,
-      randomizer=randomizer
-    )
+  @sp.onchain_view()
+  def randomBetweenSync(self, params):
+    ent = sp.pack(sp.now)
+    nat = self.hash_to_nat(ent + self.data.harbingerEntropy)
+    __from = params._to - params._from + 1
+    rnd = nat % sp.as_nat(__from)
+    res = rnd + params._from
+#    sp.trace(res)
+    sp.result(res)
 
-  @sp.entry_point
-  def setRandomNumber(self, randomNumber):
-    sp.set_type(randomNumber, sp.TNat)
-    sp.if sp.sender != self.data.randomizer:
-      sp.failwith('Only Randomizer can call this entrypoint')
-    self.data.randomNumber = randomNumber
-
-  @sp.entry_point
-  def getRandomNumber(self, _from, _to):
-    callback_address = sp.self_entry_point_address(entry_point = 'setRandomNumber')
-    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, callback_address=sp.TAddress), self.data.randomizer, entry_point="randomBetween").open_some()
-    sp.transfer(sp.record(_from=_from, _to=_to, callback_address=callback_address), sp.mutez(0), c)
- 
