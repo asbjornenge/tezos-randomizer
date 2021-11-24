@@ -3,34 +3,12 @@ from datetime import datetime
 
 Randomizer = sp.io.import_script_from_url("file:randomizer.py")
 Caller = sp.io.import_script_from_url("file:caller.py")
-Harbinger = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmQEiiK812GVE352znnFL372pyMxQUdX6C3mNojtfqmfqn")
 
-@sp.add_target(name="Randomizer", kind="randomizer")
-def test():
-  scenario = sp.test_scenario()
+allKind = 'all'
 
-  ## Prepare Harbinger Oracle
-
-  normalizer = Harbinger.NormalizerContract()
-  scenario += normalizer 
-  scenario += normalizer.update(
-    Harbinger.makeMap(
-      assetCode="XTZ-USD",
-      start=sp.timestamp(1),
-      end=sp.timestamp(2),
-      open=1,
-      high=2,
-      low=3,
-      close=4,
-      volume=5
-    )
-  ).run(sender=Harbinger.defaultOracleContractAddress)
-
-  ## Randomizer
-
+def initRandomizer(admin, scenario):
   randomizer = Randomizer.Randomizer(
-    normalizer.address, 
-    "XTZ-USD",
+    admin,
     metadata = sp.big_map(
       {
         "": sp.utils.bytes_of_string("tezos-storage:content"),
@@ -39,65 +17,80 @@ def test():
     )
   )
   scenario += randomizer
-  scenario += randomizer.initHarbingerEntropy() 
-  randomCaller = Caller.RandomCaller(randomizer.address)
-  scenario += randomCaller 
+  caller = Caller.RandomCaller(randomizer.address)
+  scenario += caller
+  return randomizer, caller
 
-  scenario += normalizer.update(
-    Harbinger.makeMap(
-      assetCode="XTZ-USD",
-      start=sp.timestamp(3),
-      end=sp.timestamp(4),
-      open=1,
-      high=10,
-      low=5,
-      close=6,
-      volume=50
-    )
-  ).run(sender=Harbinger.defaultOracleContractAddress)
+@sp.add_target(name="Admin", kind=allKind)
+def test():
+  admin = sp.address("tz1-admin")
+  user1 = sp.address("tz1-user1")
+  scenario = sp.test_scenario()
+  randomizer, caller = initRandomizer(admin, scenario)
 
-  scenario += randomCaller.getRandomNumber(sp.record(_from=5, _to=10)).run(now=sp.timestamp(int(datetime.now().timestamp())))
-  scenario.verify(randomCaller.data.randomNumber >= 5)
-  scenario.verify(randomCaller.data.randomNumber <= 10)
+  ## Admin can set entropy
 
-  scenario += normalizer.update(
-    Harbinger.makeMap(
-      assetCode="XTZ-USD",
-      start=sp.timestamp(5),
-      end=sp.timestamp(6),
-      open=2,
-      high=100,
-      low=25,
-      close=30,
-      volume=500
-    )
-  ).run(sender=Harbinger.defaultOracleContractAddress)
+  scenario += randomizer.setEntropy(123456).run(sender=user1, valid=False, exception='Only admin can call this entrypoint') 
+  scenario += randomizer.setEntropy(123456).run(sender=admin) 
 
-  scenario += randomCaller.getRandomNumber(sp.record(_from=0, _to=7000)).run(now=sp.timestamp(int(datetime.now().timestamp())))
-  scenario.verify(randomCaller.data.randomNumber >= 0)
-  scenario.verify(randomCaller.data.randomNumber <= 7000)
+  ## TODO: test setAdmin
 
-  scenario += normalizer.update(
-    Harbinger.makeMap(
-      assetCode="XTZ-USD",
-      start=sp.timestamp(6),
-      end=sp.timestamp(7),
-      open=30,
-      high=30,
-      low=4,
-      close=5,
-      volume=1000
-    )
-  ).run(sender=Harbinger.defaultOracleContractAddress)
+@sp.add_target(name="Callback", kind=allKind)
+def test():
+  admin = sp.address("tz1-admin")
+  user1 = sp.address("tz1-user1")
+  scenario = sp.test_scenario()
+  calltime = 1637752889 
+  randomizer, caller = initRandomizer(admin, scenario)
 
-  scenario += randomCaller.getRandomNumber(sp.record(_from=1111, _to=2222)).run(now=sp.timestamp(int(datetime.now().timestamp())))
-  scenario.verify(randomCaller.data.randomNumber >= 1111)
-  scenario.verify(randomCaller.data.randomNumber <= 2222)
+  scenario += caller.getRandomNumber(sp.record(_from=5, _to=10)).run(now=sp.timestamp(calltime))
+  scenario.verify(caller.data.randomNumber >= 5)
+  scenario.verify(caller.data.randomNumber <= 10)
+  scenario.verify(caller.data.randomNumber == 8)
 
-  ## Sync endpoint
+  scenario += caller.getRandomNumber(sp.record(_from=5, _to=10)).run(now=sp.timestamp(calltime+1000))
+  scenario.verify(caller.data.randomNumber >= 5)
+  scenario.verify(caller.data.randomNumber <= 10)
+  scenario.verify(caller.data.randomNumber == 6)
 
-  rnum = randomizer.randomBetweenSync(sp.record(_from=0,_to=100))
-  scenario.verify(rnum > 0)
-  scenario.verify(rnum < 100)
+  scenario += caller.getRandomNumber(sp.record(_from=0, _to=7000)).run(now=sp.timestamp(int(datetime.now().timestamp())))
+  scenario.verify(caller.data.randomNumber >= 0)
+  scenario.verify(caller.data.randomNumber <= 7000)
 
-  scenario += randomCaller.getRandomNumberSync(sp.record(_from=0,_to=100))
+  scenario += caller.getRandomNumber(sp.record(_from=1111, _to=2222)).run(now=sp.timestamp(int(datetime.now().timestamp())))
+  scenario.verify(caller.data.randomNumber >= 1111)
+  scenario.verify(caller.data.randomNumber <= 2222)
+
+@sp.add_target(name="OnChainView", kind=allKind)
+def test():
+  admin = sp.address("tz1-admin")
+  user1 = sp.address("tz1-user1")
+  scenario = sp.test_scenario()
+  calltime = 1637752889 
+  randomizer, caller = initRandomizer(admin, scenario)
+
+  scenario += randomizer.setEntropy(12345).run(sender=admin)
+  scenario += caller.getRandomNumberSync(sp.record(_from=0,_to=100)).run(now=sp.timestamp(calltime))
+  scenario.verify(caller.data.randomNumber == 11)
+  scenario += randomizer.setEntropy(54321).run(sender=admin)
+  scenario += caller.getRandomNumberSync(sp.record(_from=0,_to=100)).run(now=sp.timestamp(calltime))
+  scenario.verify(caller.data.randomNumber == 42)
+
+@sp.add_target(name="BringEntropy", kind="entropy")
+def test():
+  admin = sp.address("tz1-admin")
+  user1 = sp.address("tz1-user1")
+  scenario = sp.test_scenario()
+  calltime = 1637752889 
+  randomizer, caller = initRandomizer(admin, scenario)
+
+  scenario += caller.getRandomNumberEntropy(sp.record(_from=0,_to=100,entropy=12345))
+  scenario.verify(caller.data.randomNumber == 63)
+  scenario += caller.getRandomNumberEntropy(sp.record(_from=0,_to=100,entropy=54321))
+  scenario.verify(caller.data.randomNumber == 28)
+
+  scenario += caller.getRandomNumberSyncEntropy(sp.record(_from=0,_to=100,entropy=12345))
+  scenario.verify(caller.data.randomNumber == 63)
+  scenario += caller.getRandomNumberSyncEntropy(sp.record(_from=0,_to=100,entropy=54321))
+  scenario.verify(caller.data.randomNumber == 28)
+

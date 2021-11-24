@@ -1,12 +1,11 @@
 import smartpy as sp
         
 class Randomizer(sp.Contract):
-  def __init__(self, harbingerAddress, harbingerPair, metadata):
+  def __init__(self, admin, metadata):
     self.init(
-      harbingerAddress=harbingerAddress,
-      harbingerPair=harbingerPair,
+      admin=admin,
       metadata=metadata,
-      harbingerEntropy=sp.bytes('0x'),
+      entropy=sp.bytes('0x'),
       bytes_to_nat = {
         sp.bytes('0x00'): 0, sp.bytes('0x01'): 1,
         sp.bytes('0x02'): 2, sp.bytes('0x03'): 3,
@@ -139,6 +138,9 @@ class Randomizer(sp.Contract):
       }
     )
 
+  ## Helper functions
+  #
+
   def hash_to_nat(self, hash_bytes):
     sp.set_type(hash_bytes, sp.TBytes)
     # Convert given string (as bytes) to sha256 hash
@@ -154,43 +156,64 @@ class Randomizer(sp.Contract):
       x.value = x.value + 1
     return total.value
 
-  @sp.entry_point
-  def setHarbingerEntropy(self, hres):
-    sp.if sp.sender != self.data.harbingerAddress:
-      sp.failwith('Only Harbinger can call this entrypoint')
-    fst = sp.fst(sp.snd(hres))
-    snd = sp.snd(sp.snd(hres))
-    self.data.harbingerEntropy = sp.sha256(sp.pack(fst) + sp.pack(snd))
+  ## Verifiers
+  #
+
+  @sp.sub_entry_point
+  def checkAdmin(self):
+    sp.verify(sp.sender == self.data.admin, 'Only admin can call this entrypoint')
+
+  ## Admin entrypoints
+  #
 
   @sp.entry_point
-  def initHarbingerEntropy(self):
-    self.getHarbingerEntropy()
-
-  def getHarbingerEntropy(self):
-    THarbingerRequest = sp.TPair(sp.TString, sp.TContract(sp.TPair(sp.TString, sp.TPair(sp.TTimestamp, sp.TNat))))
-    callback = sp.self_entry_point(entry_point = 'setHarbingerEntropy')
-    c = sp.contract(THarbingerRequest, self.data.harbingerAddress, entry_point="get").open_some()
-    args = (self.data.harbingerPair, callback) 
-    sp.transfer(args, sp.mutez(0), c)
+  def setAdmin(self, admin):
+    self.checkAdmin()
+    self.data.admin = admin 
 
   @sp.entry_point
-  def randomBetween(self, _from, _to, callback_address):
-    ent = sp.pack(sp.now)
-    nat = self.hash_to_nat(ent + self.data.harbingerEntropy)
+  def setEntropy(self, entropy):
+    sp.set_type(entropy, sp.TNat)
+    self.checkAdmin()
+    self.data.entropy = sp.sha256(sp.pack(entropy))
+
+  ## GetRandomNumber Callback Entrypoints
+  #
+
+  @sp.entry_point
+  def getRandomBetweenCallback(self, _from, _to, callback_address):
+    nat = self.hash_to_nat(sp.sha256(sp.pack(sp.now) + self.data.entropy))
     __from = _to - _from + 1
     rnd = nat % sp.as_nat(__from)
     res = rnd + _from
-    self.getHarbingerEntropy() # Get entropy for next caller
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
+  @sp.entry_point
+  def getRandomBetweenCallbackEntropy(self, _from, _to, entropy, callback_address):
+    sp.set_type(entropy, sp.TNat)
+    nat = self.hash_to_nat(sp.sha256(sp.pack(entropy)))
+    __from = _to - _from + 1
+    rnd = nat % sp.as_nat(__from)
+    res = rnd + _from
+    c = sp.contract(sp.TNat, callback_address).open_some()
+    sp.transfer(res, sp.mutez(0), c)
+
+  ## GetRandomNumber onChain Views
+  #
+
   @sp.onchain_view()
-  def randomBetweenSync(self, params):
-    ent = sp.pack(sp.now)
-    nat = self.hash_to_nat(ent + self.data.harbingerEntropy)
+  def getRandomBetween(self, params):
+    nat = self.hash_to_nat(sp.sha256(sp.pack(sp.now) + self.data.entropy))
     __from = params._to - params._from + 1
     rnd = nat % sp.as_nat(__from)
     res = rnd + params._from
-#    sp.trace(res)
     sp.result(res)
 
+  @sp.onchain_view()
+  def getRandomBetweenEntropy(self, params):
+    nat = self.hash_to_nat(sp.sha256(sp.pack(params.entropy)))
+    __from = params._to - params._from + 1
+    rnd = nat % sp.as_nat(__from)
+    res = rnd + params._from
+    sp.result(res)
