@@ -76,7 +76,7 @@ def test():
   scenario += caller.getRandomNumberSync(sp.record(_from=0,_to=100)).run(now=sp.timestamp(calltime))
   scenario.verify(caller.data.randomNumber == 42)
 
-@sp.add_target(name="BringEntropy", kind="entropy")
+@sp.add_target(name="BringEntropy", kind=allKind)
 def test():
   admin = sp.address("tz1-admin")
   user1 = sp.address("tz1-user1")

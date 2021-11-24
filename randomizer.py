@@ -212,6 +212,7 @@ class Randomizer(sp.Contract):
 
   @sp.onchain_view()
   def getRandomBetweenEntropy(self, params):
+    sp.set_type(params.entropy, sp.TNat)
     nat = self.hash_to_nat(sp.sha256(sp.pack(params.entropy)))
     __from = params._to - params._from + 1
     rnd = nat % sp.as_nat(__from)
