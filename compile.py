@@ -4,7 +4,7 @@ import os
 env = os.environ
 
 Randomizer = sp.io.import_script_from_url("file:randomizer.py")
-harbingerAddress = sp.address(env['RANDOMIZER_HARBIGER_ADDRESS'])
+admin = sp.address(env['RANDOMIZER_ADMIN'])
 
 randomizerMetadata = {
   "name": "Randomizer",
@@ -14,8 +14,7 @@ randomizerMetadata = {
 }
 
 sp.add_compilation_target("randomizer", Randomizer.Randomizer(
-  harbingerAddress, 
-  "XTZ-USD",
+  admin, 
   metadata = sp.big_map(
     {
       "": sp.utils.bytes_of_string("tezos-storage:content"),
