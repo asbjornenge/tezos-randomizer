@@ -2,11 +2,11 @@
 
 Tezod Randomizer "Oracle".  
 
-It's a smart contract that you can call to get a random number between X and Y.
+It's a smart contract that you can call to get a random number between X and Y. 
+It comes with a [service](https://github.com/asbjornenge/tezos-randomizer-service) that can be used to generate new entropy every X minutes (currently every 30 minutes for mainnet).
+It also has `entrypoints` and `views` where you can "bring your own entropy".
 
-It has an [api]() that is used to generate new entropy every 30 minutes.
-
-It also has entrypoints and view where you can "bring your own entropy".
+If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjGwam
 
 ## Contracts
 
