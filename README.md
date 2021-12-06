@@ -71,6 +71,24 @@ getRandomBetweenCallbackEntropy
 
 ## Views
 
+```
+getRandomBetween
+  parameters:
+    _from: TNat
+    _to: TNat
+
+  Get a random number between _from and _to using storage entropy. 
+    
+getRandomBetweenEntropy
+  parameters:
+    _from: TNat
+    _to: TNat
+    entropy: TNat
+
+  Get a random number between _from and _to using passed entropy. 
+```
+
+
 ## TODO
 
 * Look into rejection sampling
