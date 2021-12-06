@@ -1,7 +1,5 @@
 # Tezos Randomizer
 
-Tezod Randomizer "Oracle".  
-
 Tezos Randomizer is a contract that you can call from your own contracts to get a random number between X and Y - on-chain :chains:. 
 It comes with a [service](https://github.com/asbjornenge/tezos-randomizer-service) that can be used to generate new entropy every X minutes (currently every 30 minutes for mainnet).
 It also has `entrypoints` and `views` where you can "bring your own entropy".
