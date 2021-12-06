@@ -8,8 +8,9 @@ admin = sp.address(env['RANDOMIZER_ADMIN'])
 
 randomizerMetadata = {
   "name": "Randomizer",
-  "description": "Tezos Oracle that can callback a random number between X and Y",
-  "version": "1.0.0",
+  "description": "Tezos Oracle that can generate a random number between X and Y",
+  "version": "2.0.0",
+  "homepage": "https://github.com/asbjornenge/tezos-randomizer",
   "authors": ["asbjornenge <asbjorn@tezid.net>"]
 }
 

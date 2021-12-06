@@ -159,7 +159,6 @@ class Randomizer(sp.Contract):
   ## Verifiers
   #
 
-  @sp.sub_entry_point
   def checkAdmin(self):
     sp.verify(sp.sender == self.data.admin, 'Only admin can call this entrypoint')
 
