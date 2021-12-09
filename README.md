@@ -10,6 +10,8 @@ If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjG
 
 * Mainnet
   * [KT1AAQzoUGFQ4HRg4qrYKY925ekNxavb7pkj](https://better-call.dev/mainnet/KT1AAQzoUGFQ4HRg4qrYKY925ekNxavb7pkj/)
+* Hangzhounet
+  * [KT1F3yK7z7AsYvLdHwiJmFnM8thtTHeuZWTf](https://better-call.dev/hangzhou2net/KT1F3yK7z7AsYvLdHwiJmFnM8thtTHeuZWTf/)
 * Granadanet
   * [KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk](https://better-call.dev/granadanet/KT18nMUHUjAHmJBYR2kSFASCCp9e4xzCNKzk/)
 
