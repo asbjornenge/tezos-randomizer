@@ -32,13 +32,26 @@ class RandomCaller(sp.Contract):
     sp.transfer(sp.record(_from=_from, _to=_to, entropy=entropy, callback_address=callback_address), sp.mutez(0), c)
 
   @sp.entry_point
-  def getRandomNumberEntropyBytes(self, _from, _to, entropy):
+  def getRandomNumberEntropyBytes(self, _from, _to, entropy, includeRandomizerEntropy):
     sp.set_type(_from, sp.TNat)
     sp.set_type(_to, sp.TNat)
     sp.set_type(entropy, sp.TBytes)
+    sp.set_type(includeRandomizerEntropy, sp.TBool)
     callback_address = sp.self_entry_point_address(entry_point = 'setRandomNumber')
-    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, entropy=sp.TBytes, callback_address=sp.TAddress), self.data.randomizer, entry_point="getRandomBetweenCallbackEntropyBytes").open_some()
-    sp.transfer(sp.record(_from=_from, _to=_to, entropy=entropy, callback_address=callback_address), sp.mutez(0), c)
+    c = sp.contract(sp.TRecord(
+      _from=sp.TNat, 
+      _to=sp.TNat, 
+      entropy=sp.TBytes, 
+      includeRandomizerEntropy=sp.TBool, 
+      callback_address=sp.TAddress
+    ), self.data.randomizer, entry_point="getRandomBetweenCallbackEntropyBytes").open_some()
+    sp.transfer(sp.record(
+      _from=_from, 
+      _to=_to, 
+      entropy=entropy, 
+      includeRandomizerEntropy=includeRandomizerEntropy,
+      callback_address=callback_address
+    ), sp.mutez(0), c)
  
   @sp.entry_point
   def getRandomNumberSync(self, _from, _to):
@@ -62,11 +75,12 @@ class RandomCaller(sp.Contract):
     sp.verify(rnum <= _to, "Value is to high")
 
   @sp.entry_point
-  def getRandomNumberSyncEntropyBytes(self, _from, _to, entropy):
+  def getRandomNumberSyncEntropyBytes(self, _from, _to, entropy, includeRandomizerEntropy):
     sp.set_type(_from, sp.TNat)
     sp.set_type(_to, sp.TNat)
     sp.set_type(entropy, sp.TBytes)
-    arg =  sp.record(_from=_from, _to=_to, entropy=entropy)
+    sp.set_type(includeRandomizerEntropy, sp.TBool)
+    arg =  sp.record(_from=_from, _to=_to, entropy=entropy, includeRandomizerEntropy=includeRandomizerEntropy)
     rnum = sp.view("getRandomBetweenEntropyBytes", self.data.randomizer, arg, sp.TNat).open_some("Invalid view");
     self.data.randomNumber = rnum
     sp.verify(rnum >= _from, "Value is to low")

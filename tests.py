@@ -102,13 +102,24 @@ def test():
   calltime = 1637752889 
   randomizer, caller = initRandomizer(admin, scenario)
 
-  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345)))
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345), includeRandomizerEntropy=False))
   scenario.verify(caller.data.randomNumber == 63)
-  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321)))
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321), includeRandomizerEntropy=False))
   scenario.verify(caller.data.randomNumber == 28)
 
-  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345)))
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345), includeRandomizerEntropy=False))
   scenario.verify(caller.data.randomNumber == 63)
-  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321)))
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321), includeRandomizerEntropy=False))
   scenario.verify(caller.data.randomNumber == 28)
 
+  scenario += randomizer.setEntropy(12345).run(sender = admin)
+
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345), includeRandomizerEntropy=True))
+  scenario.verify(caller.data.randomNumber == 89)
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321), includeRandomizerEntropy=True))
+  scenario.verify(caller.data.randomNumber == 91)
+
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345), includeRandomizerEntropy=True))
+  scenario.verify(caller.data.randomNumber == 89)
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321), includeRandomizerEntropy=True))
+  scenario.verify(caller.data.randomNumber == 91)

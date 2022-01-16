@@ -199,9 +199,13 @@ class Randomizer(sp.Contract):
     sp.transfer(res, sp.mutez(0), c)
 
   @sp.entry_point
-  def getRandomBetweenCallbackEntropyBytes(self, _from, _to, entropy, callback_address):
+  def getRandomBetweenCallbackEntropyBytes(self, _from, _to, entropy, includeRandomizerEntropy, callback_address):
     sp.set_type(entropy, sp.TBytes)
-    nat = self.hash_to_nat(sp.sha256(entropy))
+    sp.set_type(includeRandomizerEntropy, sp.TBool)
+    _entropy = sp.local('_entropy', entropy)
+    sp.if includeRandomizerEntropy:
+      _entropy.value = _entropy.value + self.data.entropy
+    nat = self.hash_to_nat(sp.sha256(_entropy.value))
     __from = _to - _from + 1
     rnd = nat % sp.as_nat(__from)
     res = rnd + _from
@@ -231,7 +235,11 @@ class Randomizer(sp.Contract):
   @sp.onchain_view()
   def getRandomBetweenEntropyBytes(self, params):
     sp.set_type(params.entropy, sp.TBytes)
-    nat = self.hash_to_nat(sp.sha256(params.entropy))
+    sp.set_type(params.includeRandomizerEntropy, sp.TBool)
+    _entropy = sp.local('_entropy', params.entropy)
+    sp.if params.includeRandomizerEntropy:
+      _entropy.value = _entropy.value + self.data.entropy
+    nat = self.hash_to_nat(sp.sha256(_entropy.value))
     __from = params._to - params._from + 1
     rnd = nat % sp.as_nat(__from)
     res = rnd + params._from
