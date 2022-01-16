@@ -198,6 +198,16 @@ class Randomizer(sp.Contract):
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
+  @sp.entry_point
+  def getRandomBetweenCallbackEntropyBytes(self, _from, _to, entropy, callback_address):
+    sp.set_type(entropy, sp.TBytes)
+    nat = self.hash_to_nat(sp.sha256(entropy))
+    __from = _to - _from + 1
+    rnd = nat % sp.as_nat(__from)
+    res = rnd + _from
+    c = sp.contract(sp.TNat, callback_address).open_some()
+    sp.transfer(res, sp.mutez(0), c)
+
   ## GetRandomNumber onChain Views
   #
 
@@ -213,6 +223,15 @@ class Randomizer(sp.Contract):
   def getRandomBetweenEntropy(self, params):
     sp.set_type(params.entropy, sp.TNat)
     nat = self.hash_to_nat(sp.sha256(sp.pack(params.entropy)))
+    __from = params._to - params._from + 1
+    rnd = nat % sp.as_nat(__from)
+    res = rnd + params._from
+    sp.result(res)
+
+  @sp.onchain_view()
+  def getRandomBetweenEntropyBytes(self, params):
+    sp.set_type(params.entropy, sp.TBytes)
+    nat = self.hash_to_nat(sp.sha256(params.entropy))
     __from = params._to - params._from + 1
     rnd = nat % sp.as_nat(__from)
     res = rnd + params._from

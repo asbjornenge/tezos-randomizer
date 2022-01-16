@@ -94,3 +94,21 @@ def test():
   scenario += caller.getRandomNumberSyncEntropy(sp.record(_from=0,_to=100,entropy=54321))
   scenario.verify(caller.data.randomNumber == 28)
 
+@sp.add_target(name="BringEntropyBytes", kind=allKind)
+def test():
+  admin = sp.address("tz1-admin")
+  user1 = sp.address("tz1-user1")
+  scenario = sp.test_scenario()
+  calltime = 1637752889 
+  randomizer, caller = initRandomizer(admin, scenario)
+
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345)))
+  scenario.verify(caller.data.randomNumber == 63)
+  scenario += caller.getRandomNumberEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321)))
+  scenario.verify(caller.data.randomNumber == 28)
+
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(12345)))
+  scenario.verify(caller.data.randomNumber == 63)
+  scenario += caller.getRandomNumberSyncEntropyBytes(sp.record(_from=0,_to=100,entropy=sp.pack(54321)))
+  scenario.verify(caller.data.randomNumber == 28)
+
