@@ -8,6 +8,15 @@ If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjG
 
 ## Contracts
 
+### v3
+
+* Mainnet
+  * [](https://better-call.dev/mainnet//)
+* Hangzhounet
+  * [KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P](https://better-call.dev/hangzhou2net/KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P/)
+
+### v2
+
 * Mainnet
   * [KT1AAQzoUGFQ4HRg4qrYKY925ekNxavb7pkj](https://better-call.dev/mainnet/KT1AAQzoUGFQ4HRg4qrYKY925ekNxavb7pkj/)
 * Hangzhounet
@@ -19,7 +28,7 @@ If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjG
 
 ```
 # v3.0.0
-Randomizer = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/...")
+Randomizer = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmPNkabMCpDmFE6GynfS9UAoQDLE6PyCLpRJQmceEp2oTv")
 # v2.0.0
 Randomizer = sp.io.import_script_from_url("https://ipfs.infura.io/ipfs/QmWMFUneMRphK1uGKZaYjRXo8eJxRxB9rLU453DHrrBE1w")
 # v1.0.0
