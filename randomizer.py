@@ -3,7 +3,7 @@ import smartpy as sp
 class Randomizer(sp.Contract):
   def __init__(self, admin, metadata):
     self.init(
-      admin=admin,
+      admins=sp.set([admin]),
       metadata=metadata,
       entropy=sp.bytes('0x'),
       bytes_to_nat = {
@@ -160,15 +160,20 @@ class Randomizer(sp.Contract):
   #
 
   def checkAdmin(self):
-    sp.verify(sp.sender == self.data.admin, 'Only admin can call this entrypoint')
+    sp.verify(self.data.admins.contains(sp.sender), 'Only admin can call this entrypoint')
 
   ## Admin entrypoints
   #
 
   @sp.entry_point
-  def setAdmin(self, admin):
+  def addAdmin(self, admin):
     self.checkAdmin()
-    self.data.admin = admin 
+    self.data.admins.add(admin) 
+
+  @sp.entry_point
+  def delAdmin(self, admin):
+    self.checkAdmin()
+    self.data.admins.remove(admin) 
 
   @sp.entry_point
   def setEntropy(self, entropy):
@@ -180,7 +185,7 @@ class Randomizer(sp.Contract):
   #
 
   @sp.entry_point
-  def getRandomBetweenCallback(self, _from, _to, callback_address):
+  def getRBC(self, _from, _to, callback_address):
     nat = self.hash_to_nat(sp.sha256(sp.pack(sp.now) + self.data.entropy))
     __from = _to - _from + 1
     rnd = nat % sp.as_nat(__from)
@@ -189,7 +194,7 @@ class Randomizer(sp.Contract):
     sp.transfer(res, sp.mutez(0), c)
 
   @sp.entry_point
-  def getRandomBetweenCallbackEntropy(self, _from, _to, entropy, callback_address):
+  def getRBCE(self, _from, _to, entropy, callback_address):
     sp.set_type(entropy, sp.TNat)
     nat = self.hash_to_nat(sp.sha256(sp.pack(entropy)))
     __from = _to - _from + 1
@@ -199,7 +204,7 @@ class Randomizer(sp.Contract):
     sp.transfer(res, sp.mutez(0), c)
 
   @sp.entry_point
-  def getRandomBetweenCallbackEntropyBytes(self, _from, _to, entropy, includeRandomizerEntropy, callback_address):
+  def getRBCEB(self, _from, _to, entropy, includeRandomizerEntropy, callback_address):
     sp.set_type(entropy, sp.TBytes)
     sp.set_type(includeRandomizerEntropy, sp.TBool)
     _entropy = sp.local('_entropy', entropy)

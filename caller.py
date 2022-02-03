@@ -19,7 +19,7 @@ class RandomCaller(sp.Contract):
     sp.set_type(_from, sp.TNat)
     sp.set_type(_to, sp.TNat)
     callback_address = sp.self_entry_point_address(entry_point = 'setRandomNumber')
-    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, callback_address=sp.TAddress), self.data.randomizer, entry_point="getRandomBetweenCallback").open_some()
+    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, callback_address=sp.TAddress), self.data.randomizer, entry_point="getRBC").open_some()
     sp.transfer(sp.record(_from=_from, _to=_to, callback_address=callback_address), sp.mutez(0), c)
 
   @sp.entry_point
@@ -28,7 +28,7 @@ class RandomCaller(sp.Contract):
     sp.set_type(_to, sp.TNat)
     sp.set_type(entropy, sp.TNat)
     callback_address = sp.self_entry_point_address(entry_point = 'setRandomNumber')
-    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, entropy=sp.TNat, callback_address=sp.TAddress), self.data.randomizer, entry_point="getRandomBetweenCallbackEntropy").open_some()
+    c = sp.contract(sp.TRecord(_from=sp.TNat, _to=sp.TNat, entropy=sp.TNat, callback_address=sp.TAddress), self.data.randomizer, entry_point="getRBCE").open_some()
     sp.transfer(sp.record(_from=_from, _to=_to, entropy=entropy, callback_address=callback_address), sp.mutez(0), c)
 
   @sp.entry_point
@@ -44,7 +44,7 @@ class RandomCaller(sp.Contract):
       entropy=sp.TBytes, 
       includeRandomizerEntropy=sp.TBool, 
       callback_address=sp.TAddress
-    ), self.data.randomizer, entry_point="getRandomBetweenCallbackEntropyBytes").open_some()
+    ), self.data.randomizer, entry_point="getRBCEB").open_some()
     sp.transfer(sp.record(
       _from=_from, 
       _to=_to, 
