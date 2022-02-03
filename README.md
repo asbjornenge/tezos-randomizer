@@ -11,7 +11,7 @@ If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjG
 ### v3
 
 * Mainnet
-  * [](https://better-call.dev/mainnet//)
+  * [KT1UcszCkuL5eMpErhWxpRmuniAecD227Dwp](https://better-call.dev/mainnet/KT1UcszCkuL5eMpErhWxpRmuniAecD227Dwp/)
 * Hangzhounet
   * [KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P](https://better-call.dev/hangzhou2net/KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P/)
 
