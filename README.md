@@ -12,6 +12,8 @@ If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjG
 
 * Mainnet
   * [KT1UcszCkuL5eMpErhWxpRmuniAecD227Dwp](https://better-call.dev/mainnet/KT1UcszCkuL5eMpErhWxpRmuniAecD227Dwp/)
+* Ithacanet 
+  * [KT1Ls4XzMgz59Z2UxRroAtrQ8gN8c5AWeV9B](https://better-call.dev/ithacanet/KT1Ls4XzMgz59Z2UxRroAtrQ8gN8c5AWeV9B/)
 * Hangzhounet
   * [KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P](https://better-call.dev/hangzhou2net/KT19etCHSt75MTF4NvUHxRNBPvp74ggv9g3P/)
 
