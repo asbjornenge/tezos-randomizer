@@ -141,20 +141,28 @@ class Randomizer(sp.Contract):
   ## Helper functions
   #
 
-  def hash_to_nat(self, hash_bytes):
-    sp.set_type(hash_bytes, sp.TBytes)
-    # Convert given string (as bytes) to sha256 hash
-    _hash = sp.local('_hash', sp.sha256(hash_bytes))
-    # Iterate over each byte of the hash and look up the corresponding int value from our big table above
-    x = sp.local('x', 0)
-    # Store the 'total' Nat value of the bytes
-    total = sp.local('total', 0)
-    hash_len = sp.local("hash_len", sp.len(_hash.value))
-    sp.while x.value < hash_len.value:
-      # Add to previous total and then multiple the new value by 256
-      total.value = (total.value * 256 + self.data.bytes_to_nat[sp.slice(_hash.value, x.value, 1).open_some()])
-      x.value = x.value + 1
-    return total.value
+  def _get_discrete_random_number(self, n, entropy_in):
+      # generate a non-biased uniform random discrete number between 0 and n
+      # by using a combination of rejection sampling and modulo reduction
+
+      multiplier = 256 / n
+
+      entropy = sp.local('entropy', entropy_in)
+      hash_len = sp.local("hash_len", sp.len(entropy_in))
+      x = sp.local('x', 0)
+      found = sp.local('found', False)
+      result = sp.local('result', 0)
+      with sp.while_(~found.value):
+          with sp.while_((x.value < hash_len.value) &(~found.value)):
+              result.value = self.data.bytes_to_nat[sp.slice(entropy.value, x.value, 1).open_some()]
+              with sp.if_(result.value < multiplier*n):
+                  found.value = True
+              x.value += 1
+          with sp.if_(~found.value):
+              # statistically almost impossible to occcur
+              x.value = 0
+              entropy.value = sp.sha256(entropy.value)
+      return result.value % n
 
   ## Verifiers
   #
@@ -186,20 +194,14 @@ class Randomizer(sp.Contract):
 
   @sp.entry_point
   def getRBC(self, _from, _to, callback_address):
-    nat = self.hash_to_nat(sp.sha256(sp.pack(sp.now) + self.data.entropy))
-    __from = _to - _from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + _from
+    res = self._get_discrete_random_number(sp.as_nat(_to - _from), sp.sha256(sp.pack(sp.now) + self.data.entropy)) + _from
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
   @sp.entry_point
   def getRBCE(self, _from, _to, entropy, callback_address):
     sp.set_type(entropy, sp.TNat)
-    nat = self.hash_to_nat(sp.sha256(sp.pack(entropy)))
-    __from = _to - _from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + _from
+    res = self._get_discrete_random_number(sp.as_nat(_to-_from), sp.sha256(sp.pack(entropy))) + _from
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
@@ -210,10 +212,7 @@ class Randomizer(sp.Contract):
     _entropy = sp.local('_entropy', entropy)
     sp.if includeRandomizerEntropy:
       _entropy.value = _entropy.value + self.data.entropy
-    nat = self.hash_to_nat(sp.sha256(_entropy.value))
-    __from = _to - _from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + _from
+    res = self._get_discrete_random_number(sp.as_nat(_to-_from), sp.sha256(_entropy.value)) + _from
     c = sp.contract(sp.TNat, callback_address).open_some()
     sp.transfer(res, sp.mutez(0), c)
 
@@ -222,19 +221,14 @@ class Randomizer(sp.Contract):
 
   @sp.onchain_view()
   def getRandomBetween(self, params):
-    nat = self.hash_to_nat(sp.sha256(sp.pack(sp.now) + self.data.entropy))
-    __from = params._to - params._from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + params._from
+
+    res = self._get_discrete_random_number(sp.as_nat(params._to-params._from), sp.sha256(sp.pack(sp.now)+self.data.entropy)) + params._from
     sp.result(res)
 
   @sp.onchain_view()
   def getRandomBetweenEntropy(self, params):
     sp.set_type(params.entropy, sp.TNat)
-    nat = self.hash_to_nat(sp.sha256(sp.pack(params.entropy)))
-    __from = params._to - params._from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + params._from
+    res = self._get_discrete_random_number(sp.as_nat(params._to-params._from), sp.sha256(sp.pack(params.entropy))) + params._from
     sp.result(res)
 
   @sp.onchain_view()
@@ -244,8 +238,5 @@ class Randomizer(sp.Contract):
     _entropy = sp.local('_entropy', params.entropy)
     sp.if params.includeRandomizerEntropy:
       _entropy.value = _entropy.value + self.data.entropy
-    nat = self.hash_to_nat(sp.sha256(_entropy.value))
-    __from = params._to - params._from + 1
-    rnd = nat % sp.as_nat(__from)
-    res = rnd + params._from
+    res = self._get_discrete_random_number(sp.as_nat(params._to-params._from), sp.sha256(_entropy.value)) + params._from
     sp.result(res)
