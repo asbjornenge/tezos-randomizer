@@ -6,7 +6,7 @@ It also has `entrypoints` and `views` where you can "bring your own entropy".
 
 If you use this software, donate :point_right: tz1UZZnrre9H7KzAufFVm7ubuJh5cCfjGwam
 
-NB!!! The Tezos Randomizer is deterministic. This means that a tech savvy user can predict the outcome of the randomizer for a transaction within a specific block by simulating transactions and front-running the entropy-pusher services. If you have a high value use-case, please make sure to read [this](https://www.opentezos.com/smart-contracts/avoiding-flaws/#7-using-unreliable-sources-of-randomness) and provide your own entropy to the randomizer.
+**NB!!!** The Tezos Randomizer is **deterministic**. This means that a tech savvy user can predict the outcome of the randomizer for a transaction within a specific block by simulating transactions and front-running the entropy-pusher services. If you have a high value use-case, please make sure to read [this](https://www.opentezos.com/smart-contracts/avoiding-flaws/#7-using-unreliable-sources-of-randomness) and provide your own entropy to the randomizer.
 
 ## Contracts
 
